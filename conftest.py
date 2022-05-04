@@ -1,37 +1,37 @@
 import pytest
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.chrome.webdriver import WebDriver as Chrome
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.firefox.service import Service as FirefoxService
+from selenium.webdriver.firefox.webdriver import WebDriver as Firefox
+from selenium.webdriver.remote.webdriver import WebDriver
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
 
-from environment_variables import EnvironmentVariables
+from config import TestConfig
 
 
 @pytest.fixture()
-def browser(config):
-    driver = None
+def webdriver():
+    config = TestConfig()
+    driver: WebDriver
 
     if config.browser == 'Chrome':
         chrome_driver = ChromeDriverManager().install()
-        chrome_options = webdriver.ChromeOptions()
-        chrome_options.accept_insecure_certs
-
-        driver = webdriver.Chrome(service=Service(chrome_driver), options=chrome_options)
+        chrome_options = ChromeOptions()
+        chrome_options.accept_insecure_certs = True
+        driver = Chrome(service=ChromeService(chrome_driver), options=chrome_options)
     elif config.browser == 'Firefox':
         firefox_driver = GeckoDriverManager().install()
-        firefox_options = webdriver.FirefoxOptions()
-        firefox_options.accept_insecure_certs
-
-        driver = webdriver.Firefox(service=Service(firefox_driver), options=firefox_options)
+        firefox_options = FirefoxOptions()
+        firefox_options.accept_insecure_certs = True
+        driver = Firefox(service=FirefoxService(firefox_driver), options=firefox_options)
     else:
         raise ValueError(f'Unknown browser: {config.browser}')
+
+    driver.implicitly_wait(config.implicit_wait)
 
     yield driver
 
     driver.quit()
-
-
-@pytest.fixture()
-def config():
-    envs = EnvironmentVariables()
-    return envs
