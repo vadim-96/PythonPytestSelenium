@@ -1,22 +1,20 @@
 from urllib.parse import urljoin
 
-from selenium.webdriver.remote.webdriver import WebDriver
+from playwright.sync_api import Page
 from typing_extensions import Self
-
-from config import TestConfig
 
 
 class PageObject:
-    __webdriver: WebDriver
+    __page: Page
     __url: str
 
-    def __init__(self, webdriver: WebDriver) -> None:
-        self.__webdriver = webdriver
+    def __init__(self, page: Page) -> None:
+        self.__page = page
 
     def open(self, url_params: str = '') -> Self:
         full_url = urljoin(self.__url, url_params) if url_params else self.__url
 
-        self.__webdriver.get(full_url)
+        self.__page.goto(full_url)
 
         return self
 
@@ -29,9 +27,8 @@ class PageObject:
         if not relative_url or relative_url is None:
             raise ValueError('Relative URL cannot be empty')
 
-        config = TestConfig()
-        self.__url = urljoin(config.root_url, relative_url) if relative_url else config.root_url
+        self.__url = relative_url
 
     @property
-    def _webdriver(self) -> WebDriver:
-        return self.__webdriver
+    def _page(self) -> Page:
+        return self.__page

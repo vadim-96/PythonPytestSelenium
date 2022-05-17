@@ -1,14 +1,15 @@
-from selenium.webdriver.common.by import By
-from selenium.webdriver.remote.webdriver import WebDriver
+from typing import Union
+
+from playwright.sync_api import Page
 
 from .page_object import PageObject
 
 
 class MainPage(PageObject):
-    def __init__(self, webdriver: WebDriver) -> None:
-        super().__init__(webdriver)
+    def __init__(self, page: Page) -> None:
+        super().__init__(page)
 
     @property
-    def company_name(self) -> str:
-        label = self._webdriver.find_element(By.XPATH, "//span[@class='companyNameLabel']")
-        return label.text
+    def company_name(self) -> Union[str, None]:
+        label = self._page.locator("//span[@class='companyNameLabel']")
+        return label.text_content()
