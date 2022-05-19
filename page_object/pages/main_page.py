@@ -9,6 +9,6 @@ class MainPage(PageObject):
         super().__init__(webdriver)
 
     @property
-    def company_name(self) -> str:
-        label = self._webdriver.find_element(By.XPATH, "//span[@class='companyNameLabel']")
-        return label.text
+    def profile_title(self) -> str:
+        span = self._webdriver.find_element(By.XPATH, "//span[@class='profileTitle']")
+        return span.text
