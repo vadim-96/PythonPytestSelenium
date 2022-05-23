@@ -8,7 +8,7 @@ from .page_object import PageObject
 class LoginPage(PageObject):
     def __init__(self, webdriver: WebDriver) -> None:
         super().__init__(webdriver)
-        self._url = '/auth'
+        self._url = "/auth"
 
     def login_as(self, login: str, password: str) -> Self:
         login_field = self._webdriver.find_element(By.XPATH, "//input[@name='email']")
