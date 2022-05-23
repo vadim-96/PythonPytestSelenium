@@ -2,7 +2,7 @@
 name = "python_pytest_selenium"
 version = "0.1.0"
 description = "Test project using pytest and selenium"
-authors = ["Vadim Mazhitov <mazhitov.vadim@gmail.com>"]
+authors = ["Mazhitov Vadim <mazhitov.vadim@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"

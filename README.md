@@ -1,3 +1,6 @@
+# About
+Demo test project using Python, Pytest and Selenium.
+
 # How to run
 * Install Python 3.8
 * Install dependencies from `pyproject.toml` file
