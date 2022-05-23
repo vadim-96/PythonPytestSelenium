@@ -5,9 +5,7 @@ from dotenv import load_dotenv
 
 
 @dataclass
-class TestConfig(object):
-    __test__ = False
-
+class TestConfig:
     def __new__(cls):
         if not hasattr(cls, "instance"):
             cls.instance = super(TestConfig, cls).__new__(cls)
