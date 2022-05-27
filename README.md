@@ -14,3 +14,10 @@ Demo test project using Python, Pytest and Selenium.
       PASSWORD=example123
       ```
 * Run `pytest` command
+
+# Getting report
+* Install Java
+* [Install Allure](https://docs.qameta.io/allure/#_get_started)
+* After running tests, run the following commands:
+    * `allure generate ./artifacts/allure-results/ --report-dir ./artifacts/allure-report/`
+    * `allure open ./artifacts/allure-report/`

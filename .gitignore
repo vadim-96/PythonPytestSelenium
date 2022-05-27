@@ -8,6 +8,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+artifacts/allure*
 build/
 develop-eggs/
 dist/

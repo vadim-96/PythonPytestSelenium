@@ -8,7 +8,7 @@ from page_object.pages import BillsPage
 
 
 class BillsTests:
-    @pytest.mark.skip(reason="There is no validation on the form yet")
+    @pytest.mark.skip(reason="there is no validation on the form yet")
     def test_validate_BIK_field_on_creating_bill_form(self, webdriver: WebDriver) -> None:
         authentication_steps = AuthenticationSteps(webdriver)
         bills_page = BillsPage(webdriver)
