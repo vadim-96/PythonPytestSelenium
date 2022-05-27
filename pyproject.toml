@@ -13,6 +13,7 @@ python-dotenv = "^0.20.0"
 assertpy = "^1.1"
 typing-extensions = "^4.2.0"
 allure-pytest = "^2.9.45"
+pytest-xdist = "^2.5.0"
 
 [tool.poetry.dev-dependencies]
 black = "^22.3.0"
@@ -26,7 +27,7 @@ testpaths = ["tests"]
 python_files = ["test_*.py", "*_test.py", "*_tests.py", "*_suite.py"]
 python_classes = ["Test*", "*Test*", "*Test", "*Tests", "*Suite"]
 python_functions = ["test_*"]
-addopts = "--alluredir=./artifacts/allure-results/ --clean-alluredir"
+addopts = "--numprocesses auto --alluredir=./artifacts/allure-results/ --clean-alluredir"
 
 [tool.black]
 line-length = 120

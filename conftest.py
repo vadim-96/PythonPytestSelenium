@@ -1,8 +1,7 @@
 from typing import Generator
 
 import allure
-from pluggy._result import _Result
-from pytest import CallInfo, FixtureRequest, Item, TestReport, fixture, hookimpl
+import pytest
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.webdriver import WebDriver as Chrome
@@ -16,29 +15,19 @@ from webdriver_manager.firefox import GeckoDriverManager
 from config import TestConfig
 
 
-@hookimpl(tryfirst=True, hookwrapper=True)
-def pytest_runtest_makereport(item: Item, call: CallInfo) -> Generator[None, _Result, TestReport]:
-    outcome: _Result = yield
-    rep: TestReport = outcome.get_result()
-
-    setattr(item, f"rep_{rep.when}", rep)
-
-    return rep
-
-
-@fixture(scope="session")
+@pytest.fixture(scope="session")
 def config() -> TestConfig:
     return TestConfig()
 
 
-@fixture()
-def webdriver(request: FixtureRequest, config: TestConfig) -> Generator[WebDriver, None, None]:
+@pytest.fixture()
+def webdriver(request: pytest.FixtureRequest, config: TestConfig) -> Generator[WebDriver, None, None]:
     driver = setup_webdriver(config)
 
     yield driver
 
     try:
-        if request.node.rep_call.failed:
+        if request.session.testsfailed > 0:
             test_name = request.node.name
             screenshot = driver.get_screenshot_as_png()
             allure.attach(screenshot, name=test_name, attachment_type=allure.attachment_type.PNG)
