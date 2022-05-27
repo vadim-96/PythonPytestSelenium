@@ -1,6 +1,8 @@
 from typing import Generator
 
-import pytest
+import allure
+from pluggy._result import _Result
+from pytest import CallInfo, FixtureRequest, Item, TestReport, fixture, hookimpl
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.webdriver import WebDriver as Chrome
@@ -14,13 +16,37 @@ from webdriver_manager.firefox import GeckoDriverManager
 from config import TestConfig
 
 
-@pytest.fixture(scope="session")
+@hookimpl(tryfirst=True, hookwrapper=True)
+def pytest_runtest_makereport(item: Item, call: CallInfo) -> Generator[None, _Result, TestReport]:
+    outcome: _Result = yield
+    rep: TestReport = outcome.get_result()
+
+    setattr(item, f"rep_{rep.when}", rep)
+
+    return rep
+
+
+@fixture(scope="session")
 def config() -> TestConfig:
     return TestConfig()
 
 
-@pytest.fixture(scope="session")
-def webdriver(config: TestConfig) -> Generator[WebDriver, None, None]:
+@fixture()
+def webdriver(request: FixtureRequest, config: TestConfig) -> Generator[WebDriver, None, None]:
+    driver = setup_webdriver(config)
+
+    yield driver
+
+    try:
+        if request.node.rep_call.failed:
+            test_name = request.node.name
+            screenshot = driver.get_screenshot_as_png()
+            allure.attach(screenshot, name=test_name, attachment_type=allure.attachment_type.PNG)
+    finally:
+        driver.quit()
+
+
+def setup_webdriver(config: TestConfig) -> WebDriver:
     driver: WebDriver
 
     if config.browser == "Chrome":
@@ -39,6 +65,4 @@ def webdriver(config: TestConfig) -> Generator[WebDriver, None, None]:
     driver.implicitly_wait(config.implicit_wait)
     driver.maximize_window()
 
-    yield driver
-
-    driver.quit()
+    return driver
