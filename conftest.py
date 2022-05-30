@@ -2,6 +2,7 @@ from typing import Generator
 
 import allure
 import pytest
+from pluggy._result import _Result
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.webdriver import WebDriver as Chrome
@@ -13,6 +14,16 @@ from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
 
 from config import TestConfig
+
+
+@pytest.hookimpl(tryfirst=True, hookwrapper=True)
+def pytest_runtest_makereport(item: pytest.Item, call: pytest.CallInfo) -> Generator[None, _Result, pytest.TestReport]:
+    outcome: _Result = yield
+    rep: pytest.TestReport = outcome.get_result()
+
+    setattr(item, f"rep_{rep.when}", rep)
+
+    return rep
 
 
 @pytest.fixture(scope="session")
@@ -27,7 +38,7 @@ def webdriver(request: pytest.FixtureRequest, config: TestConfig) -> Generator[W
     yield driver
 
     try:
-        if request.session.testsfailed > 0:
+        if request.node.rep_call.failed:
             test_name = request.node.name
             screenshot = driver.get_screenshot_as_png()
             allure.attach(screenshot, name=test_name, attachment_type=allure.attachment_type.PNG)
